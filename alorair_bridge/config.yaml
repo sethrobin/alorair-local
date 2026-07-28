@@ -1,5 +1,5 @@
 name: AlorAir Local Bridge
-version: "1.6.1"
+version: "1.6.2"
 slug: alorair_bridge
 description: Local cloud replacement + MQTT bridge for AlorAir/BaseAire dehumidifiers
 url: https://github.com/sethrobin/alorair-local

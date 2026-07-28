@@ -49,7 +49,7 @@ import os
 import sys
 import time
 
-VERSION = "1.6.1"      # keep in sync with config.yaml
+VERSION = "1.6.2"      # keep in sync with config.yaml
 
 # The device resolves this at boot and connects to it on 6200. It is an
 # Alibaba Cloud load balancer (CNAME -> nlb-*.us-west-1.nlb.aliyuncsslbintl
