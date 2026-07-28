@@ -24,6 +24,15 @@ format.
 
 ## Install (Home Assistant add-on — recommended)
 
+> **Requires Home Assistant OS or Supervised** — the installs that have the
+> Add-on Store (add-ons are now called **apps** in the HA UI). If you run
+> Home Assistant in a plain Docker **Container** (or Core), you can't install
+> add-ons at all — run the bridge as its own container instead; see
+> [Alternative: plain Docker](#alternative-plain-docker-no-ha-add-on) below.
+> The same split applies to the DNS step: the Dnsmasq option under Method A
+> is itself an add-on, so Container users handle DNS on their router or with
+> a standalone Pi-hole/AdGuard/dnsmasq.
+
 1. Add this repository as an add-on source: Settings -> Add-ons -> Add-on
    Store -> ⋮ -> **Repositories**, paste
    `https://github.com/sethrobin/alorair-local`, then reload the store.
@@ -89,6 +98,17 @@ firewall rules. This is what the maintainer's own deployment runs.
 
 1. Add a **local DNS record / DNS rewrite** mapping
    `online-app.toovem.com` → **your HA host's IP**:
+   - **Home Assistant OS — official Dnsmasq add-on** (no external tools, the
+     easiest path if you already run HAOS): install **Dnsmasq** from the
+     Add-on Store — *"Setup and manage a Dnsmasq DNS server. This allows you
+     to manipulate DNS requests… have your Home Assistant domain resolve with
+     an internal address inside your network."* In its config, add a host
+     entry mapping `online-app.toovem.com` → your HA host's IP, and start it.
+     Then point your router's DHCP **DNS server** at the HA host so the
+     dehumidifier asks Dnsmasq. The whole setup stays inside Home Assistant —
+     no Pi-hole, no router DNS feature, no NAT rule. (Dnsmasq forwards every
+     other lookup upstream, so it works as your normal network resolver; just
+     note that DNS then depends on HA being up.)
    - **Pi-hole**: Local DNS → DNS Records → add the pair.
    - **AdGuard Home**: Filters → DNS rewrites → add `online-app.toovem.com`
      with your HA IP.
@@ -218,6 +238,25 @@ runs transparent relay mode for protocol capture.
   dehumidifier's IP so nothing else on the network can talk to port 6200.
 - **Never commit MQTT credentials.** They live in the HA add-on config at
   runtime, not in this repo.
+
+## About this project
+
+The bulk of the work here — reverse-engineering the wire protocol, writing the
+bridge and the Home Assistant add-on, and producing this documentation — was
+done by **Claude** (Anthropic's AI) working under my direction. I set the
+goals, supplied the hardware and network access, ran the physical tests
+(pressing panel buttons, listening for the compressor, capturing packets), and
+made the judgment calls; Claude did most of the analysis, coding, and writing,
+iterating against live results from the actual dehumidifier.
+
+I'm sharing it not only because it works, but as a small, concrete
+demonstration of the democratization of software development that AI has
+enabled: a complete, tested, local integration for an otherwise cloud-locked
+device — built by someone directing the effort rather than hand-writing every
+line. If you have a device you wish you controlled and a problem you can
+describe clearly, that path is open to you too.
+
+— Seth Robinson
 
 ## License
 
