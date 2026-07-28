@@ -1,0 +1,28 @@
+name: AlorAir Local Bridge
+version: "1.6.1"
+slug: alorair_bridge
+description: Local cloud replacement + MQTT bridge for AlorAir/BaseAire dehumidifiers
+url: https://github.com/sethrobin/alorair-local
+arch:
+  - amd64
+init: false
+startup: application
+boot: auto
+ports:
+  6200/tcp: 6200
+ports_description:
+  6200/tcp: Dehumidifier cloud connection — point the UniFi DNAT here
+options:
+  mqtt_host: core-mosquitto
+  mqtt_port: 1883
+  mqtt_user: ""
+  mqtt_pass: ""
+  allowed_source_ip: ""
+  mode: local
+schema:
+  mqtt_host: str
+  mqtt_port: port
+  mqtt_user: str
+  mqtt_pass: password
+  allowed_source_ip: str
+  mode: list(local|relay)

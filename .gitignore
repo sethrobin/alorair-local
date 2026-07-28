@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*.log
+data/
+.DS_Store
+.venv/
+*.swp
+# never commit secrets / runtime options
+options.json
+secrets.yaml

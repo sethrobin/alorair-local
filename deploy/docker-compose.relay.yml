@@ -1,0 +1,23 @@
+# Relay mode — transparent MITM to the real vendor cloud, decode+log every frame.
+# For protocol capture / debugging. The dehumidifier keeps working normally.
+# Point the UniFi Dest-NAT at this host:6200 while running.
+name: alorair-relay
+services:
+  alorair-relay:
+    image: python:3.12-slim
+    container_name: alorair-relay
+    restart: unless-stopped
+    environment:
+      PYTHONUNBUFFERED: "1"
+    ports:
+      - "6200:6200"
+    volumes:
+      - ../alorair_bridge/alorair_cloud.py:/app/alorair_cloud.py:ro
+      - ./data:/data
+    command:
+      - python
+      - /app/alorair_cloud.py
+      - --mode
+      - relay
+      - --logfile
+      - /data/capture.log

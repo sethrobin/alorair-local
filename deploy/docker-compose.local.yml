@@ -1,0 +1,29 @@
+# Local mode on a generic Docker host (not the HA add-on).
+# Set MQTT_* to your broker. The container must be reachable by the dehumidifier
+# on :6200 (point the UniFi Dest-NAT here) and must reach your MQTT broker.
+name: alorair-local
+services:
+  alorair-local:
+    image: python:3.12-slim
+    container_name: alorair-local
+    restart: unless-stopped
+    environment:
+      PYTHONUNBUFFERED: "1"
+      MQTT_HOST: "CHANGEME"          # broker IP/host
+      MQTT_PORT: "1883"
+      MQTT_USER: "CHANGEME"
+      MQTT_PASS: "CHANGEME"          # do not commit real secrets
+      MQTT_PREFIX: "alorair"
+      DISCOVERY_PREFIX: "homeassistant"
+      ALLOWED_SOURCE_IP: ""            # optional: pin to the dehumidifier's IP
+    ports:
+      - "6200:6200"
+    volumes:
+      - ../alorair_bridge/alorair_cloud.py:/app/alorair_cloud.py:ro
+      - ./data:/data
+    command:
+      - sh
+      - -c
+      - >
+        pip install --no-cache-dir paho-mqtt==2.1.0 &&
+        python /app/alorair_cloud.py --mode local --logfile /data/local.log
