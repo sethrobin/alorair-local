@@ -117,6 +117,28 @@ KNOWN ISSUES / NEXT STEPS (all minor):
 - Undecoded constants at offsets 2/0x0b, 8/0x10, 39/0x20 (32 — possibly
   the defrost threshold in °F).
 
+## Future development
+
+- **Passthrough mode (app/cloud + HA coexist).** A third `mode: passthrough`
+  that keeps `relay`'s transparent MITM to the real cloud (so the AlorAir-C
+  app and cloud keep working) while also running `local`'s MQTT bridge:
+  publish parsed status to HA (nearly free — relay already decodes it) and
+  inject HA commands into the device socket (reuses `build_command`/`_send`).
+  Changes made in HA propagate to the app too, since both read the same
+  status stream; contradictory simultaneous commands are last-writer-wins and
+  self-correct from the authoritative status frame.
+  - Design choice deferred: monitor-only (HA read, app controls) vs. full
+    dual-control (HA can command too). Full is barely more code.
+  - **Wrinkle:** under the DNS-override deployment, the bridge can't resolve
+    the real cloud by name (it points at HA — the self-dial guard in
+    handle_relay already trips). Passthrough needs an explicit upstream
+    resolver option (e.g. 1.1.1.1) to look up online-app.toovem.com fresh.
+    Cleaner under the DNAT method, where HA's own DNS still reaches the cloud.
+  - **Tradeoff to document loudly:** this re-introduces the vendor cloud —
+    plaintext data to Alibaba, dependence on their uptime, and firmware OTA
+    becomes possible again (the protocol-break/brick risk cord-cutting
+    removed). Opt-in only, never default.
+
 ## Conventions / gotchas
 
 - **Never commit secrets.** MQTT credentials are entered in the HA add-on config
